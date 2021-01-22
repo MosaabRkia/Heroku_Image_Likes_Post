@@ -2,7 +2,7 @@ const root = document.querySelector('#root')
 
 function getEmails(){
     console.log('get emails')
-    fetch('/getEmails')
+    fetch('/get-emails')
     .then(r=>r.json())
     .then(data=>{
         console.log('then')
