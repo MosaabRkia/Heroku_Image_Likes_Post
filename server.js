@@ -8,6 +8,10 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
 
+const PhotosArr =[
+
+]
+
 const listOfEmails=[
     {email:'6@gmail.com'},
     {email:'1@gmail.com'},
@@ -46,7 +50,23 @@ app.post('/login',(req, res)=>{
     
 })
 
-const port = process.env.PORT || 3000;
+
+app.post('/Get-SrcPhoto',(req,res)=>{
+    const photoSrctemp = req.body;
+    if(photoSrctemp != ""){
+        PhotosArr.push(photoSrctemp)
+    }
+    console.log(PhotosArr)
+})
+
+app.get('/Send-Photos',(req,res)=>{
+    res.send(PhotosArr);
+})
+
+
+
+
+const port = process.env.PORT || 3001;
 
 
 app.listen(port, function () {
