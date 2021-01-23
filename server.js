@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 
 app.use(express.static('public'))
+var bodyParser = require('body-parser')
+
+
+app.use(bodyParser.json())
+
 
 const listOfEmails=[
     {email:'6@gmail.com'},
@@ -12,12 +17,36 @@ const listOfEmails=[
     {email:'5@gmail.com'},
 ]
 
+const LoginUsers =[
+    {user:"tal" , password:"tal123"}
+]
 
 app.get('/get-emails',(req, res)=>{
     res.send(listOfEmails)
   })
 
-const port = process.env.PORT || 3003;
+
+  app.post('/add-email',(req,res)=>{
+      const {email} = req.body;
+      if(listOfEmails.findIndex(emaili => emaili.email === email) === -1){
+        listOfEmails.push({email:email});
+        res.send(listOfEmails)
+      }
+
+  })
+
+app.post('/login',(req, res)=>{
+    console.log("arrived")
+    const { user, password } = req.body;
+    const index = LoginUsers.findIndex(login => login.user === user && login.password === password);
+    if (index === -1) {
+        res.send({ login: false })
+    }
+    res.send({ login: true })
+    
+})
+
+const port = process.env.PORT || 3000;
 
 
 app.listen(port, function () {

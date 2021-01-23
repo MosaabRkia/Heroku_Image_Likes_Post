@@ -1,21 +1,71 @@
-const root = document.querySelector('#root')
 
-function getEmails(){
+/*
+function getEmails(e){
     console.log('get emails')
     fetch('/get-emails')
     .then(r=>r.json())
     .then(data=>{
-        console.log('then')
+        console.log('data' + data)
         changeText(data)
     })
     console.log('after fetch')
+}*/
+
+async function getEmails(){
+const r = await fetch('/get-emails');
+const data = await r.json();
+console.log(data);
+changeText(data);
+}
+
+ function addEmailToList(e){
+     e.preventDefault();
+console.log(e.target.elements)
+       email = e.target.elements.email.value;
+
+   fetch('/add-email',{
+       method:'POST',
+       headers:{
+        'Content-Type': 'application/json'
+       },body:JSON.stringify({email})
+   })
 }
 
 
-function renderUsers(Emails){
+
+
+
+
+
+
+
+
+
+function submitData(e){
+e.preventDefault();
+
+let { user, password } = e.target.elements;
+
+user = user.value;
+password = password.value;
+const req = fetch('/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }, body: JSON.stringify({ user, password })
+});
+const data = req.json();
+console.log(data);
+
+
+}
+
+
+function changeText(listOfEmails){
+    const root = document.querySelector('#root')
     let html = '';
-    Emails.forEach(email=>{
-        html += `<p>Name: ${user.name}</p>`
+    listOfEmails.forEach(Eachemail=>{
+        html += `<p>Name: ${Eachemail.email}</p>`
     }) 
 
     root.innerHTML = html
