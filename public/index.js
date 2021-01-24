@@ -2,18 +2,28 @@ function sendDataToServer(e) {
   e.preventDefault();
 
   const src = e.target.elements.src.value;
-  fetch("/Get-SrcPhoto", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ src }),
-  });
-  document.getElementById("alert").innerHTML = `
-  <div class="alertVoted">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-    <strong>Added !</strong> Thank you for using our website !
-  </div>`
+  if(src !== null && src !== ""){
+
+    fetch("/Get-SrcPhoto", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ src }),
+    });
+    document.getElementById("alert").innerHTML = `
+    <div class="alertVoted">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+      <strong>Added !</strong> Thank you for using our website !
+    </div>`
+  }
+  else{
+    document.getElementById("alert").innerHTML = `
+    <div class="alert">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+      <strong>Please Fill The Text Box</strong>
+    </div>`
+  }
 }
 
 async function getPhotos() {
@@ -29,8 +39,8 @@ async function getPhotos() {
     }
 
     allphotos += `
-    <div id=${index} class="container">
-    <img class="card-img-top" id=${index} style="width: 250px; height:250px; "  src=${e.src}/>  
+    <div id=${index} >
+    <img class ="photosRate" id=${index} style="width: 250px; height:250px;  "  src=${e.src}/>  
     <div id="rateBar">
       <img id="rateStar1_${index}" onclick="sendRate(${index},1)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">
       <img id="rateStar2_${index}" onclick="sendRate(${index},2)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">
@@ -90,7 +100,7 @@ async function GetPhotosPoints() {
   let Temparr = ArrOfPointsById.sort((a, b) => parseFloat(b.Points) - parseFloat(a.Points));
 
   Temparr.map((e) => {
-text+= `<div class="card" ><h1 class="card-title"> Points : ${e.Points}</h1> <img class="card-img-top" src="${ArrOfPhotos[e.id].src}"/></div>`
+text+= `<div class="eachDivCardWithScore" ><h1> Points : ${e.Points}</h1> <img id="photoinCard" src="${ArrOfPhotos[e.id].src}"/></div> <br/><br/>`
    
   });
 let tempText =   document.querySelector("#allPhotosWithPoints");
