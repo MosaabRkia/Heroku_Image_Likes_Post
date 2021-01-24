@@ -9,6 +9,11 @@ function sendDataToServer(e) {
     },
     body: JSON.stringify({ src }),
   });
+  document.getElementById("alert").innerHTML = `
+  <div class="alertVoted">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+    <strong>Added !</strong> Thank you for using our website !
+  </div>`
 }
 
 async function getPhotos() {
@@ -16,49 +21,80 @@ async function getPhotos() {
   const data = await r.json();
   let allphotos = "";
   await data.map((e, index) => {
+    if (localStorage.getItem(index) === null) 
     localStorage.setItem(index, 0);
-    let score = localStorage.getItem(index);
-      
+
+    if (localStorage.getItem(`voted${index}`) !== "true") {
+      localStorage.setItem(`voted${index}`, "false");
+    }
+
     allphotos += `
-    <div id=${index}>
-    <img id=${index} style="width: 250px; height:250px;"  src=${e.src}/>  
+    <div id=${index} class="container">
+    <img class="card-img-top" id=${index} style="width: 250px; height:250px; "  src=${e.src}/>  
     <div id="rateBar">
-    <img id="rateStar1_${index}" onclick="sendRate(${index},1)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/fvws4bJ/star-removebg-preview.png">
-    <img id="rateStar2_${index}" onclick="sendRate(${index},2)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/fvws4bJ/star-removebg-preview.png">
-    <img id="rateStar3_${index}" onclick="sendRate(${index},3)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/fvws4bJ/star-removebg-preview.png">
-    <img id="rateStar4_${index}" onclick="sendRate(${index},4)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/fvws4bJ/star-removebg-preview.png">
-    <img id="rateStar5_${index}" onclick="sendRate(${index},5)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/fvws4bJ/star-removebg-preview.png">
+      <img id="rateStar1_${index}" onclick="sendRate(${index},1)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">
+      <img id="rateStar2_${index}" onclick="sendRate(${index},2)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">
+      <img id="rateStar3_${index}" onclick="sendRate(${index},3)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">
+      <img id="rateStar4_${index}" onclick="sendRate(${index},4)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">
+      <img id="rateStar5_${index}" onclick="sendRate(${index},5)" style="width: 40px; height:40px; cursor: pointer; border-radius: 22px;" src="https://i.ibb.co/0mPY3yv/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-removebg-preview.png">  
     </div>
   <div>`;
-  
   });
   example = document.querySelector("#allPhotosToShow");
   example.innerHTML = allphotos;
 }
 
+function sendRate(index, howMuchPoint) {
+  if (localStorage.getItem(`voted${index}`) === "false") {
+    localStorage.setItem(`voted${index}`, "true");
+    let X = parseInt(localStorage.getItem(index));
 
-function sendRate(index,howMuchPoint){
-    let X = parseInt(localStorage.getItem( index));
-    if(X===0){
-        let total =  X + howMuchPoint;
-        console.log(total)
-        localStorage.setItem(index, total);
-    console.log(`rateStar1_${index}`)
-        for (let i = 1; i <= howMuchPoint; i++) {
-            let R = `rateStar${i}_${index}`;
-          document.getElementById(R).style.backgroundColor="orange";
-        }
+    let total = X + howMuchPoint;
+    localStorage.setItem(index, total);
+    for (let i = 1; i <= howMuchPoint; i++) {
+      let R = `rateStar${i}_${index}`;
+      document.getElementById(R).src = "https://i.ibb.co/vPdkCdz/500-F-198051091-ep-WKz8i-FMUxc-YDc-BBc-NGWd-UBks-El3-LCY-Copy-removebg-preview.png";
+      document.getElementById("alert").innerHTML = `
+      <div class="alertAdded">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+        <strong>Voted !</strong> Thank you for voted !
+      </div>`
     }
+
+    const id = index;
+    const Points = howMuchPoint;
+    fetch("/setPoint", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, Points }),
+    });
+  } else {
+    document.getElementById("alert").innerHTML = `
+    <div class="alert">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+      <strong>Cant ReVote !</strong> you already voted before allow one time only !
+    </div>`
+  }
+}
+async function GetPhotosPoints() {
+  const r = await fetch("/Send-Photos");
+  const ArrOfPhotos = await r.json();
+
+  const s = await fetch("/SendPoint");
+  const ArrOfPointsById = await s.json();
+
+  let text="";
+
+  let Temparr = ArrOfPointsById.sort((a, b) => parseFloat(b.Points) - parseFloat(a.Points));
+
+  Temparr.map((e) => {
+text+= `<div class="card" ><h1 class="card-title"> Points : ${e.Points}</h1> <img class="card-img-top" src="${ArrOfPhotos[e.id].src}"/></div>`
+   
+  });
+let tempText =   document.querySelector("#allPhotosWithPoints");
+tempText.innerHTML = text;
 }
 
 
-
-/**
-    <button id="rateStarFirst_${index}" onclick="sendRate(${index},1)"></button>
-    <button id="rateStarSecond_${index}" onclick="sendRate(${index},1)"></button>
-    <button id="rateStarThird_${index}" onclick="sendRate(${index},1)"></button>
-    <button id="rateStarFourth_${index}" onclick="sendRate(${index},1)"></button>
-    <button id="rateStarFifth_${index}" onclick="sendRate(${index},1)"></button>
-   }) 
-
- */

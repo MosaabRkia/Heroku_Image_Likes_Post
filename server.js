@@ -1,17 +1,57 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.use(express.static('public'))
-var bodyParser = require('body-parser')
+app.use(express.static("public"));
+var bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
+
+const PhotosArr = [];
+const allpointsById = [];
+/////////////////////////////////////////
+//src photos
+app.post("/Get-SrcPhoto", (req, res) => {
+  const photoSrctemp = req.body;
+  if (photoSrctemp != "") {
+    PhotosArr.push(photoSrctemp);
+  }
+  console.log(PhotosArr);
+});
+
+app.get("/Send-Photos", (req, res) => {
+  res.send(PhotosArr);
+});
+
+///////////////////////////////////////////
+//POINTS
+
+app.post("/setPoint", (req, res) => {
+  const  {id,Points}  = req.body;
+  console.log(id,Points)
+  if (allpointsById.findIndex((eachPhoto) => eachPhoto.id === id) === -1)
+    allpointsById.push({ id: id, Points: Points });
+  else {
+      let X = allpointsById.findIndex((eachPhoto) => eachPhoto.id === id);
+      allpointsById[X].Points = allpointsById[X].Points + Points 
+  }
+
+  console.log(allpointsById);
+});
+
+app.get("/SendPoint", (req, res) => {
+  res.send(allpointsById);
+});
 
 
-app.use(bodyParser.json())
+const port = process.env.PORT || 3000;
+
+app.listen(port, function () {
+  console.log("listening", port);
+});
 
 
-const PhotosArr =[
 
-]
-
+/*
 const listOfEmails=[
     {email:'6@gmail.com'},
     {email:'1@gmail.com'},
@@ -48,27 +88,4 @@ app.post('/login',(req, res)=>{
     }
     res.send({ login: true })
     
-})
-
-
-app.post('/Get-SrcPhoto',(req,res)=>{
-    const photoSrctemp = req.body;
-    if(photoSrctemp != ""){
-        PhotosArr.push(photoSrctemp)
-    }
-    console.log(PhotosArr)
-})
-
-app.get('/Send-Photos',(req,res)=>{
-    res.send(PhotosArr);
-})
-
-
-
-
-const port = process.env.PORT || 3001;
-
-
-app.listen(port, function () {
-    console.log('listening', port)
-  })
+})*/
